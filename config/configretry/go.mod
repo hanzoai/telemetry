@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/config/configretry
 
-go 1.26
+go 1.26.3
 
 require (
 	github.com/cenkalti/backoff/v5 v5.0.3
