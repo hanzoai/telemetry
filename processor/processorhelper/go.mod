@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/processor/processorhelper
 
-go 1.26
+go 1.26.3
 
 replace go.opentelemetry.io/collector/processor => ../
 
