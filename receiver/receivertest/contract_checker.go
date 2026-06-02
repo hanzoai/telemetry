@@ -133,7 +133,7 @@ func checkConsumeContractScenario(params CheckConsumeContractParams, decisionFun
 	// Begin generating data to the receiver.
 
 	generatedIDs := make(idSet)
-	var generatedIndex int64
+	var generatedIndex atomic.Int64
 	var mux sync.Mutex
 	var wg sync.WaitGroup
 

@@ -12,6 +12,9 @@ ALL_SRC := $(shell find . -name '*.go' \
 ALL_DOC := $(shell find . \( -name "*.md" -o -name "*.yaml" \) \
                                 -type f | sort)
 
+# All Markdown files. Used in markdownlint.
+ALL_MD := $(shell find . -name "*.md" -type f | sort)
+
 # ALL_MODULES includes ./* dirs (excludes . dir)
 ALL_MODULES := $(shell find . -mindepth 2 \
 				-type f \
@@ -37,7 +40,7 @@ endef
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: checklicense checkdoc misspell goimpi goporto multimod-verify golint gotest
+all: checklicense checkdoc misspell markdownlint goimpi goporto multimod-verify golint gotest
 
 all-modules:
 	@echo $(ALL_MODULES) | tr ' ' '\n' | sort
@@ -133,6 +136,10 @@ checklicense:
 .PHONY: misspell
 misspell:
 	$(GO_TOOL) misspell -error $(ALL_DOC)
+
+.PHONY: markdownlint
+markdownlint:
+	npx -y markdownlint-cli@0.48.0 -c .markdownlint.yaml --ignore-path .markdownlintignore -- $(ALL_MD)
 
 .PHONY: misspell-correction
 misspell-correction:
@@ -354,7 +361,7 @@ checklinks:
 	command -v $(DOCKERCMD) >/dev/null 2>&1 || { echo >&2 "$(DOCKERCMD) not installed. Install before continuing"; exit 1; }
 	$(DOCKERCMD) run -w /home/repo --rm \
 		--mount 'type=bind,source='$(PWD)',target=/home/repo' \
-		lycheeverse/lychee \
+		lycheeverse/lychee:0.23 \
 		--config .github/lychee.toml \
 		--root-dir /home/repo \
 		-v \
