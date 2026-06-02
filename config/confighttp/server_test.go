@@ -29,8 +29,8 @@ import (
 	"go.opentelemetry.io/collector/config/configopaque"
 	"go.opentelemetry.io/collector/config/configoptional"
 	"go.opentelemetry.io/collector/config/configtls"
+	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
-	"go.opentelemetry.io/collector/confmap/xconfmap"
 	"go.opentelemetry.io/collector/extension"
 	"go.opentelemetry.io/collector/extension/extensionauth"
 )
@@ -104,7 +104,7 @@ func TestHTTPServerSettingsError(t *testing.T) {
 	}
 }
 
-func TestHttpServerTLS(t *testing.T) {
+func TestHTTPServerTLS(t *testing.T) {
 	tests := []struct {
 		name           string
 		tlsServerCreds configoptional.Optional[configtls.ServerConfig]
@@ -309,7 +309,7 @@ func TestHttpServerTransport(t *testing.T) {
 	}
 }
 
-func TestHttpCors(t *testing.T) {
+func TestHTTPCors(t *testing.T) {
 	tests := []struct {
 		name string
 
@@ -399,7 +399,7 @@ func TestHttpCors(t *testing.T) {
 	}
 }
 
-func TestHttpCorsInvalidSettings(t *testing.T) {
+func TestHTTPCorsInvalidSettings(t *testing.T) {
 	sc := &ServerConfig{
 		NetAddr: confignet.AddrConfig{
 			Endpoint:  "localhost:0",
@@ -419,7 +419,7 @@ func TestHttpCorsInvalidSettings(t *testing.T) {
 	require.NoError(t, s.Close())
 }
 
-func TestHttpCorsWithSettings(t *testing.T) {
+func TestHTTPCorsWithSettings(t *testing.T) {
 	sc := &ServerConfig{
 		NetAddr: confignet.AddrConfig{
 			Endpoint:  "localhost:0",
@@ -455,7 +455,40 @@ func TestHttpCorsWithSettings(t *testing.T) {
 	assert.Equal(t, "*", rec.Header().Get("Access-Control-Allow-Origin"))
 }
 
-func TestHttpServerHeaders(t *testing.T) {
+func TestHTTPCorsExposedHeaders(t *testing.T) {
+	sc := &ServerConfig{
+		NetAddr: confignet.AddrConfig{
+			Endpoint:  "localhost:0",
+			Transport: confignet.TransportTypeTCP,
+		},
+		CORS: configoptional.Some(CORSConfig{
+			AllowedOrigins: []string{"http://allowed.com"},
+			ExposedHeaders: []string{"X-Custom-Header", "X-Another-Header"},
+		}),
+	}
+
+	ln, err := sc.ToListener(context.Background())
+	require.NoError(t, err)
+
+	startServer(t, sc, ln, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	url := "http://" + ln.Addr().String()
+
+	// ExposedHeaders are returned on actual requests, not preflight.
+	req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
+	require.NoError(t, err)
+	req.Header.Set("Origin", "http://allowed.com")
+
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	require.NoError(t, resp.Body.Close())
+
+	assert.Equal(t, "X-Custom-Header, X-Another-Header", resp.Header.Get("Access-Control-Expose-Headers"))
+}
+
+func TestHTTPServerHeaders(t *testing.T) {
 	tests := []struct {
 		name    string
 		headers configopaque.MapList
@@ -861,7 +894,7 @@ func TestAuthWithQueryParams(t *testing.T) {
 	assert.True(t, authCalled)
 }
 
-func BenchmarkHttpRequest(b *testing.B) {
+func BenchmarkHTTPRequest(b *testing.B) {
 	tests := []struct {
 		name            string
 		forceHTTP1      bool
@@ -1102,7 +1135,7 @@ func TestServerUnmarshalYAMLWithMiddlewares(t *testing.T) {
 	require.NoError(t, serverSub.Unmarshal(&serverConfig))
 
 	// Validate the server configuration using reflection-based validation
-	require.NoError(t, xconfmap.Validate(&serverConfig), "Server configuration should be valid")
+	require.NoError(t, confmap.Validate(&serverConfig), "Server configuration should be valid")
 
 	assert.Equal(t, "0.0.0.0:4318", serverConfig.NetAddr.Endpoint)
 	require.Len(t, serverConfig.Middlewares, 2)
@@ -1123,7 +1156,7 @@ func TestServerUnmarshalYAMLComprehensiveConfig(t *testing.T) {
 	require.NoError(t, serverSub.Unmarshal(&serverConfig))
 
 	// Validate the server configuration using reflection-based validation
-	require.NoError(t, xconfmap.Validate(&serverConfig), "Server configuration should be valid")
+	require.NoError(t, confmap.Validate(&serverConfig), "Server configuration should be valid")
 
 	// Verify basic fields
 	assert.Equal(t, "0.0.0.0:4318", serverConfig.NetAddr.Endpoint)
@@ -1146,6 +1179,8 @@ func TestServerUnmarshalYAMLComprehensiveConfig(t *testing.T) {
 	assert.Equal(t, expectedOrigins, serverConfig.CORS.Get().AllowedOrigins)
 	corsHeaders := []string{"Content-Type", "Accept"}
 	assert.Equal(t, corsHeaders, serverConfig.CORS.Get().AllowedHeaders)
+	exposedHeaders := []string{"X-Request-Id", "X-Trace-Id"}
+	assert.Equal(t, exposedHeaders, serverConfig.CORS.Get().ExposedHeaders)
 	assert.Equal(t, 7200, serverConfig.CORS.Get().MaxAge)
 
 	// Verify response headers

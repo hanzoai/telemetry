@@ -211,6 +211,7 @@ func TestExportTraceDataOp(t *testing.T) {
 	obsrep, err := newObsReportSender(
 		exporter.Settings{ID: exporterID, TelemetrySettings: tt.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 		pipeline.SignalTraces,
+		nil,
 		sender.NewSender(func(context.Context, request.Request) error { return exporterErr }),
 	)
 	require.NoError(t, err)
@@ -285,6 +286,7 @@ func TestExportMetricsOp(t *testing.T) {
 	obsrep, err := newObsReportSender(
 		exporter.Settings{ID: exporterID, TelemetrySettings: tt.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 		pipeline.SignalMetrics,
+		nil,
 		sender.NewSender(func(context.Context, request.Request) error { return exporterErr }),
 	)
 	require.NoError(t, err)
@@ -359,6 +361,7 @@ func TestExportLogsOp(t *testing.T) {
 	obsrep, err := newObsReportSender(
 		exporter.Settings{ID: exporterID, TelemetrySettings: tt.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 		pipeline.SignalLogs,
+		nil,
 		sender.NewSender(func(context.Context, request.Request) error { return exporterErr }),
 	)
 	require.NoError(t, err)
@@ -555,6 +558,7 @@ func TestExportProfilesOp(t *testing.T) {
 	obsrep, err := newObsReportSender(
 		exporter.Settings{ID: exporterID, TelemetrySettings: tt.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 		xpipeline.SignalProfiles,
+		nil,
 		sender.NewSender(func(context.Context, request.Request) error { return exporterErr }),
 	)
 	require.NoError(t, err)
