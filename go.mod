@@ -11,6 +11,8 @@ module go.opentelemetry.io/collector
 go 1.26.3
 
 require (
+	github.com/golang/snappy v1.0.0
+	github.com/klauspost/compress v1.18.6
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9
 	google.golang.org/grpc v1.80.0
