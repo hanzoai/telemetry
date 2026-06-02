@@ -4,9 +4,9 @@ Collector build and testing is currently fully automated. However there are stil
 
 We release both core and contrib collectors with the same versions where the contrib release uses the core release as a dependency. We’ve divided this process into three sections. Each section is assigned to an approver or maintainer of the corresponding repository. The sections are:
 
-1. The [Core](#releasing-opentelemetry-collector) collector, including the collector builder CLI tool.
-2. The [Contrib](#releasing-opentelemetry-collector-contrib) collector repository, containing Collector components.
-3. The [artifacts](#producing-the-artifacts)
+1. The [Core](#releasing-opentelemetry-collector-core-release-manager) collector, including the collector builder CLI tool.
+2. The [Contrib](#releasing-opentelemetry-collector-contrib-contrib-release-manager) collector repository, containing Collector components.
+3. The [artifacts](#producing-the-artifacts-releases-release-manager)
 
 **Important Note:** You’ll need to be able to sign git commits/tags in order to be able to release a collector version. Follow [this guide](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits) to set it up.
 
@@ -30,17 +30,9 @@ Before the release, make sure there are no open release blockers in [core](https
    -  🛑 **Do not move forward until this PR is merged.**
 
 2. Determine the version number that will be assigned to the release. Usually, we increment the minor version number and set the patch number to 0. In this document, we are using `v0.85.0` as the version to be released, following `v0.84.0`.
-   Check if stable modules have any changes since the last release by running the following:
-   - `make check-changes PREVIOUS_VERSION=v1.x.x MODSET=stable`.
-
-   If there are no changes, there is no need to release new version for stable
-   modules. If there are changes found but .chloggen directory doesn't have any
-   corresponding entries, add missing changelog entries. If the changes are
-   insignificant, consider not releasing a new version for stable modules.
 
 3. Manually run the action [Automation - Prepare Release](https://github.com/open-telemetry/opentelemetry-collector/actions/workflows/prepare-release.yml). This action will create an issue to track the progress of the release and a pull request to update the changelog and version numbers in the repo.
    - When prompted, enter the version numbers determined in Step 2, but do not include a leading `v`.
-   - If not intending to release stable modules, do not specify a version for `Release candidate version stable`.
    - While this PR is open all merging in Core is automatically halted via the `Merge freeze / Check` CI check.
    - If the PR needs updated in any way you can make the changes in a fork and PR those changes into the `prepare-release-prs/x` branch. You do not need to wait for the CI to pass in this prep-to-prep PR.
    -  🛑 **Do not move forward until this PR is merged.** 🛑
@@ -84,7 +76,6 @@ should share the list of issues that affected the release with the Collector lea
 releases and add new schedules to the bottom of the list. To update the release schedule, follow these rules:
    1. If the core release manager is also eligible as a contrib and 'releases' release manager, assign them to all roles they can perform.
    2. Otherwise, pick a contrib/'releases' approver/maintainer that is not a core approver/maintainer, rotating through the list of eligible people. The contrib approvers/maintainers are all members of the [@collector-contrib-approvers](https://github.com/orgs/open-telemetry/teams/collector-contrib-approvers) team, and the 'releases' approvers/maintainers are all members of the [@collector-releases-approvers](https://github.com/orgs/open-telemetry/teams/collector-releases-approvers) team.
-
 
 ## Troubleshooting
 

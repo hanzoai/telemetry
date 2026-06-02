@@ -136,26 +136,29 @@ func newComponentsCommand(set CollectorSettings) *cobra.Command {
 	}
 }
 
-func sortFactoriesByType[T component.Factory](factories map[component.Type]T) []T {
+func canonicalFactoryKeys[T component.Factory](factories map[component.Type]T) []component.Type {
 	// Gather component types (factories map keys)
 	componentTypes := make([]component.Type, 0, len(factories))
-	for componentType := range factories {
-		componentTypes = append(componentTypes, componentType)
+	for componentType, f := range factories {
+		if componentType == f.Type() { // keep canonical keys only
+			componentTypes = append(componentTypes, componentType)
+		}
 	}
+	return componentTypes
+}
 
-	// Sort component types as strings
+func sortFactoriesByType[T component.Factory](factories map[component.Type]T) []T {
+	componentTypes := canonicalFactoryKeys(factories)
 	sort.Slice(componentTypes, func(i, j int) bool {
 		return componentTypes[i].String() < componentTypes[j].String()
 	})
 
-	// Build and return list of factories, sorted by component types
-	sortedFactories := make([]T, 0, len(factories))
+	sortedFactories := make([]T, 0, len(componentTypes))
 	for _, componentType := range componentTypes {
 		if !isComponentAlias(factories[componentType]) {
 			sortedFactories = append(sortedFactories, factories[componentType])
 		}
 	}
-
 	return sortedFactories
 }
 
