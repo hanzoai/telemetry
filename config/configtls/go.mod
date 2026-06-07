@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/config/configtls
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/foxboron/go-tpm-keyfiles v0.0.0-20250903184740-5d135037bd4d
