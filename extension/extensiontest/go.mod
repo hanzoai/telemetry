@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/extension/extensiontest
 
-go 1.26.3
+go 1.26.4
 
 replace go.opentelemetry.io/collector/extension => ..
 
