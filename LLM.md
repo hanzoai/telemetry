@@ -1,4 +1,4 @@
-# LLM.md - Hanzo Telemetry
+# Hanzo Telemetry
 
 ## Overview
 Go module: go.opentelemetry.io/collector
