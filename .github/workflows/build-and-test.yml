@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   setup-environment:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     steps:
       - name: Checkout Repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -39,7 +39,7 @@ jobs:
         run: make gomoddownload
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [setup-environment]
     steps:
       - name: Checkout Repo
@@ -64,7 +64,7 @@ jobs:
         run: make goimpi
 
   govulncheck:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     timeout-minutes: 30
     needs: [setup-environment]
     steps:
@@ -88,7 +88,7 @@ jobs:
         run: make govulncheck
 
   checks:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [setup-environment]
     steps:
       - name: Checkout Repo
@@ -196,7 +196,7 @@ jobs:
           retention-days: 4
   unittest:
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [setup-environment, unittest-matrix]
     steps:
       - name: Print result
@@ -216,7 +216,7 @@ jobs:
           NEEDS_UNITTEST_MATRIX_RESULT: ${{ needs.unittest-matrix.result }}
 
   test-coverage:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [setup-environment]
     steps:
       - name: Checkout Repo
@@ -250,7 +250,7 @@ jobs:
 
   cross-build-collector:
     needs: [setup-environment]
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     timeout-minutes: 10
     strategy:
       fail-fast: false

@@ -50,7 +50,7 @@ jobs:
         run: make -j4 gotest
   arm-unittest:
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' && (contains(github.event.pull_request.labels.*.name, 'Run ARM') || github.event_name == 'push' || github.event_name == 'merge_group') }}
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [arm-unittest-matrix]
     steps:
       - name: Print result
