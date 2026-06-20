@@ -18,7 +18,7 @@ permissions: read-all
 
 jobs:
   contrib-tests-prepare:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Contrib Tests') }}
     steps:
       - name: Checkout Repo
@@ -35,7 +35,7 @@ jobs:
           include-hidden-files: true
 
   contrib-tests-matrix:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     needs: [contrib-tests-prepare]
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Contrib Tests') }}
     strategy:
@@ -84,7 +84,7 @@ jobs:
           make CONTRIB_PATH=/tmp/contrib SKIP_RESTORE_CONTRIB=true GROUP=${{ matrix.group }} check-contrib
 
   contrib_tests:
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'Skip Contrib Tests') }}
     needs: [contrib-tests-matrix]
     steps:
