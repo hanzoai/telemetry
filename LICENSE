@@ -1,4 +1,11 @@
 
+Copyright The OpenTelemetry Authors (github.com/open-telemetry/opentelemetry-collector)
+Copyright (c) 2026 Hanzo AI, Inc.
+
+This software is derived from the OpenTelemetry Collector
+(github.com/open-telemetry/opentelemetry-collector) and is distributed
+under the Apache License, Version 2.0. The full license text follows.
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
