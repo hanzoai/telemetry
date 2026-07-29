@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/extension/memorylimiterextension
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/stretchr/testify v1.11.1
@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/extension/extensiontest v0.146.1
 	go.opentelemetry.io/collector/internal/memorylimiter v0.146.1
 	go.uber.org/goleak v1.3.0
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	google.golang.org/grpc v1.79.1
 )
 
