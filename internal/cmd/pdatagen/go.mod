@@ -1,5 +1,5 @@
 module go.opentelemetry.io/collector/internal/cmd/pdatagen
 
-go 1.26.4
+go 1.26.5
 
 require github.com/ettle/strcase v0.2.0

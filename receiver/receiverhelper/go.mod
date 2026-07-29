@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/receiver/receiverhelper
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/stretchr/testify v1.11.1
@@ -36,7 +36,7 @@ require (
 	go.opentelemetry.io/collector/pdata/pprofile v0.146.1 // indirect
 	go.opentelemetry.io/otel/sdk v1.40.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.1 // indirect
+	go.uber.org/zap v1.28.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/grpc v1.79.1 // indirect

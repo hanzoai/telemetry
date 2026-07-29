@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/internal/telemetry
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/stretchr/testify v1.11.1
@@ -9,7 +9,7 @@ require (
 	go.opentelemetry.io/otel v1.40.0
 	go.opentelemetry.io/otel/metric v1.40.0
 	go.opentelemetry.io/otel/trace v1.40.0
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 )
 
 require (

@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/service/hostcapabilities
 
-go 1.26.4
+go 1.26.5
 
 require (
 	go.opentelemetry.io/collector/component v1.52.0

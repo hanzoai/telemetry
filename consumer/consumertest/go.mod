@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/consumer/consumertest
 
-go 1.26.4
+go 1.26.5
 
 replace go.opentelemetry.io/collector/consumer => ../
 

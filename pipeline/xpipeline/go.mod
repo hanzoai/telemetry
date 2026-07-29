@@ -1,6 +1,6 @@
 module go.opentelemetry.io/collector/pipeline/xpipeline
 
-go 1.26.4
+go 1.26.5
 
 require go.opentelemetry.io/collector/pipeline v1.52.0
 
