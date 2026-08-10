@@ -197,13 +197,7 @@ func (c *Config) ParseModules() error {
 		return err
 	}
 
-	telemetry, err := parseModules([]Module{c.Telemetry}, usedNames)
-	if err != nil {
-		return err
-	}
-	c.Telemetry = telemetry[0]
-
-	c.ConfmapProviders, err = parseModules(c.ConfmapProviders, usedNames)
+	telemetry, err := c.parseModules([]Module{c.Telemetry}, usedNames)
 	if err != nil {
 		return err
 	}
@@ -252,7 +246,7 @@ func validateTelemetry(c *Config) error {
 	return nil
 }
 
-func parseModules(mods []Module, usedNames map[string]int) ([]Module, error) {
+func (c *Config) parseModules(mods []Module, usedNames map[string]int) ([]Module, error) {
 	var parsedModules []Module
 	for _, mod := range mods {
 		if mod.Import == "" {
