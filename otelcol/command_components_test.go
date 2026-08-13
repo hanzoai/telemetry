@@ -270,7 +270,7 @@ func TestSortFactoriesByType(t *testing.T) {
 		{
 			name: "with a single factory",
 			factories: map[component.Type]mockFactory{
-				component.MustNewType("receiver"): newMockFactory("receiver_factory"),
+				component.MustNewType("receiver_factory"): newMockFactory("receiver_factory"),
 			},
 			want: []mockFactory{
 				newMockFactory("receiver_factory"),
@@ -279,9 +279,9 @@ func TestSortFactoriesByType(t *testing.T) {
 		{
 			name: "with multiple factories",
 			factories: map[component.Type]mockFactory{
-				component.MustNewType("processor"): newMockFactory("processor_factory"),
-				component.MustNewType("exporter"):  newMockFactory("exporter_factory"),
-				component.MustNewType("receiver"):  newMockFactory("receiver_factory"),
+				component.MustNewType("processor_factory"): newMockFactory("processor_factory"),
+				component.MustNewType("exporter_factory"):  newMockFactory("exporter_factory"),
+				component.MustNewType("receiver_factory"):  newMockFactory("receiver_factory"),
 			},
 			want: []mockFactory{
 				newMockFactory("exporter_factory"),
@@ -291,13 +291,16 @@ func TestSortFactoriesByType(t *testing.T) {
 		},
 		{
 			name: "with aliases factories",
+			// MakeFactoryMap files a factory under its own type and, when it
+			// carries a deprecated alias, under the alias as well.
 			factories: func() map[component.Type]mockFactory {
 				alias := newMockFactory("alias_processor_factory")
-				alias.SetDeprecatedAlias(alias.Type())
+				alias.SetDeprecatedAlias(component.MustNewType("alias_processor"))
 
 				return map[component.Type]mockFactory{
-					component.MustNewType("processor"):       newMockFactory("processor_factory"),
-					component.MustNewType("alias_processor"): alias,
+					component.MustNewType("processor_factory"):       newMockFactory("processor_factory"),
+					component.MustNewType("alias_processor_factory"): alias,
+					component.MustNewType("alias_processor"):         alias,
 				}
 			}(),
 			want: []mockFactory{
