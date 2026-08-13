@@ -366,7 +366,7 @@ func TestLoadMetadata(t *testing.T) {
 						Signal: Signal{
 							Enabled:               true,
 							Stability:             component.StabilityLevelBeta,
-							SemanticConvention:    &SemanticConvention{SemanticConventionRef: "https://github.com/open-telemetry/semantic-conventions/blob/v1.38.0/docs/system/system-metrics.md#metric-systemcputime"},
+							SemanticConvention:    &SemanticConvention{SemanticConventionRef: "https://github.com/open-telemetry/semantic-conventions/blob/v1.40.0/docs/system/system-metrics.md#metric-systemcputime"},
 							Description:           "Monotonic cumulative sum int metric enabled by default.",
 							ExtendedDocumentation: "The metric will be become optional soon.",
 							Attributes:            []AttributeName{"cpu"},
@@ -569,7 +569,7 @@ func TestLoadMetadata(t *testing.T) {
 								Description: "Queue capacity - sync gauge example.",
 								Stability:   component.StabilityLevelDevelopment,
 							},
-							Unit: strPtr("{item}"),
+							Unit: strPtr("{items}"),
 							Gauge: &Gauge{
 								MetricValueType: MetricValueType{
 									ValueType: pmetric.NumberDataPointValueTypeInt,
@@ -783,6 +783,7 @@ func TestLoadMetadata(t *testing.T) {
 			want: Metadata{
 				Type:                 "metricreceiver",
 				GeneratedPackageName: "metadata",
+				ReaggregationEnabled: true,
 				SemConvVersion:       "1.38.0",
 				ScopeName:            "go.opentelemetry.io/collector/cmd/mdatagen/internal/testdata",
 				PackageName:          "go.opentelemetry.io/collector/cmd/mdatagen/internal/testdata",

@@ -56,13 +56,17 @@ import (
 	{{- if isConnector }}
 	"go.opentelemetry.io/collector/connector"
 	"go.opentelemetry.io/collector/connector/connectortest"
-	{{- if supportsProfiles }}
+	{{- /* Any profiles-bearing pair emits xconnector below, not just
+	       supportsProfiles — a connector declaring only profiles_to_profiles
+	       used the package without importing it. */}}
+	{{- if or supportsProfilesToProfiles supportsProfilesToLogs supportsProfilesToMetrics supportsProfilesToTraces supportsLogsToProfiles supportsMetricsToProfiles supportsTracesToProfiles }}
 	"go.opentelemetry.io/collector/connector/xconnector"
+	"go.opentelemetry.io/collector/consumer/xconsumer"
 	{{- end }}
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/consumer/consumertest"
 	"go.opentelemetry.io/collector/pipeline"
-	{{ if supportsProfiles }}
+	{{ if or supportsProfilesToProfiles supportsProfilesToLogs supportsProfilesToMetrics supportsProfilesToTraces supportsLogsToProfiles supportsMetricsToProfiles supportsTracesToProfiles }}
 	"go.opentelemetry.io/collector/pipeline/xpipeline"
 	{{- end }}
 	{{- end }}

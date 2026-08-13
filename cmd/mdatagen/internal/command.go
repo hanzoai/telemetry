@@ -20,9 +20,13 @@ import (
 	"text/template"
 
 	"github.com/spf13/cobra"
+	"go.uber.org/multierr"
 	"go.yaml.in/yaml/v3"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"go.opentelemetry.io/collector/cmd/mdatagen/internal/cfggen"
+	"go.opentelemetry.io/collector/cmd/mdatagen/internal/helpers"
 )
 
 const (
@@ -404,161 +408,15 @@ func getTemplateFuncMap(md Metadata, importRootPath string) template.FuncMap {
 }
 
 func templatize(tmplFile string, funcMap template.FuncMap) *template.Template {
+	// The map comes from getTemplateFuncMap, which closes over the Metadata
+	// these helpers read. Rebuilding it here referenced an md that is not in
+	// scope, and ignored the argument the caller had already built.
 	return template.Must(
 		template.
 			New(filepath.Base(tmplFile)).
 			Option("missingkey=error").
-			Funcs(map[string]any{
-				"publicVar": func(s string) (string, error) {
-					return FormatIdentifier(s, true)
-				},
-				"attributeInfo": func(an AttributeName) Attribute {
-					return md.Attributes[an]
-				},
-				"defaultAttributes": func(ans []AttributeName) []string {
-					var atts []string
-					for _, an := range ans {
-						if md.Attributes[an].IsNotOptIn() {
-							atts = append(atts, string(md.Attributes[an].Name()))
-						}
-					}
-					return atts
-				},
-				"requiredAttributes": func(ans []AttributeName) []string {
-					var atts []string
-					for _, an := range ans {
-						if md.Attributes[an].IsRequired() {
-							atts = append(atts, string(md.Attributes[an].Name()))
-						}
-					}
-					return atts
-				},
-				"getEventConditionalAttributes": func(attrs map[AttributeName]Attribute) []AttributeName {
-					seen := make(map[AttributeName]bool)
-					used := make([]AttributeName, 0)
-
-					for _, event := range md.Events {
-						for _, attribute := range event.Attributes {
-							v, exists := attrs[attribute]
-							if exists && v.IsConditional() && !seen[attribute] {
-								used = append(used, attribute)
-								seen[attribute] = true
-							}
-						}
-					}
-					sort.Slice(used, func(i, j int) bool { return string(used[i]) < string(used[j]) })
-
-					return used
-				},
-				"getMetricConditionalAttributes": func(attrs map[AttributeName]Attribute) []AttributeName {
-					seen := make(map[AttributeName]bool)
-					used := make([]AttributeName, 0)
-
-					for _, event := range md.Metrics {
-						for _, attribute := range event.Attributes {
-							v, exists := attrs[attribute]
-							if exists && v.IsConditional() && !seen[attribute] {
-								used = append(used, attribute)
-								seen[attribute] = true
-							}
-						}
-					}
-					sort.Slice(used, func(i, j int) bool { return string(used[i]) < string(used[j]) })
-
-					return used
-				},
-				"metricInfo": func(mn MetricName) Metric {
-					return md.Metrics[mn]
-				},
-				"eventInfo": func(en EventName) Event {
-					return md.Events[en]
-				},
-				"telemetryInfo": func(mn MetricName) Metric {
-					return md.Telemetry.Metrics[mn]
-				},
-				"parseImportsRequired": func(metrics map[MetricName]Metric) bool {
-					for _, m := range metrics {
-						if m.Data().HasMetricInputType() {
-							return true
-						}
-					}
-					return false
-				},
-				"stringsJoin":  strings.Join,
-				"stringsSplit": strings.Split,
-				"userLinks": func(elems []string) []string {
-					result := make([]string, len(elems))
-					for i, elem := range elems {
-						if elem == "open-telemetry/collector-approvers" {
-							result[i] = "[@open-telemetry/collector-approvers](https://github.com/orgs/open-telemetry/teams/collector-approvers)"
-						} else {
-							result[i] = fmt.Sprintf("[@%s](https://www.github.com/%s)", elem, elem)
-						}
-					}
-					return result
-				},
-				"casesTitle":  cases.Title(language.English).String,
-				"toLowerCase": strings.ToLower,
-				"toCamelCase": func(s string) string {
-					caser := cases.Title(language.English).String
-					parts := strings.Split(s, "_")
-					var result strings.Builder
-					for _, part := range parts {
-						fmt.Fprintf(&result, "%s", caser(part))
-					}
-					return result.String()
-				},
-				"inc":       func(i int) int { return i + 1 },
-				"distroURL": distroURL,
-				"isExporter": func() bool {
-					return md.Status.Class == "exporter"
-				},
-				"isProcessor": func() bool {
-					return md.Status.Class == "processor"
-				},
-				"isReceiver": func() bool {
-					return md.Status.Class == "receiver"
-				},
-				"isExtension": func() bool {
-					return md.Status.Class == "extension"
-				},
-				"isConnector": func() bool {
-					return md.Status.Class == "connector"
-				},
-				"isScraper": func() bool {
-					return md.Status.Class == "scraper"
-				},
-				"isCommand": func() bool {
-					return md.Status.Class == "cmd"
-				},
-				"supportsLogs":               func() bool { return md.supportsSignal("logs") },
-				"supportsMetrics":            func() bool { return md.supportsSignal("metrics") },
-				"supportsTraces":             func() bool { return md.supportsSignal("traces") },
-				"supportsProfiles":           func() bool { return md.supportsSignal("profiles") },
-				"supportsLogsToLogs":         func() bool { return md.supportsSignal("logs_to_logs") },
-				"supportsLogsToMetrics":      func() bool { return md.supportsSignal("logs_to_metrics") },
-				"supportsLogsToTraces":       func() bool { return md.supportsSignal("logs_to_traces") },
-				"supportsLogsToProfiles":     func() bool { return md.supportsSignal("logs_to_profiles") },
-				"supportsMetricsToLogs":      func() bool { return md.supportsSignal("metrics_to_logs") },
-				"supportsMetricsToMetrics":   func() bool { return md.supportsSignal("metrics_to_metrics") },
-				"supportsMetricsToTraces":    func() bool { return md.supportsSignal("metrics_to_traces") },
-				"supportsMetricsToProfiles":  func() bool { return md.supportsSignal("metrics_to_profiles") },
-				"supportsTracesToLogs":       func() bool { return md.supportsSignal("traces_to_logs") },
-				"supportsTracesToMetrics":    func() bool { return md.supportsSignal("traces_to_metrics") },
-				"supportsTracesToTraces":     func() bool { return md.supportsSignal("traces_to_traces") },
-				"supportsTracesToProfiles":   func() bool { return md.supportsSignal("traces_to_profiles") },
-				"supportsProfilesToLogs":     func() bool { return md.supportsSignal("profiles_to_logs") },
-				"supportsProfilesToMetrics":  func() bool { return md.supportsSignal("profiles_to_metrics") },
-				"supportsProfilesToTraces":   func() bool { return md.supportsSignal("profiles_to_traces") },
-				"supportsProfilesToProfiles": func() bool { return md.supportsSignal("profiles_to_profiles") },
-				"expectConsumerError": func() bool {
-					return md.Tests.ExpectConsumerError
-				},
-				// ParseFS delegates the parsing of the files to `Glob`
-				// which uses the `\` as a special character.
-				// Meaning on windows based machines, the `\` needs to be replaced
-				// with a `/` for it to find the file.
-			}).ParseFS(TemplateFS, "templates/helper.tmpl", strings.ReplaceAll(tmplFile, "\\", "/")))
+			Funcs(funcMap).
+			ParseFS(TemplateFS, "templates/helper.tmpl", strings.ReplaceAll(tmplFile, "\\", "/")))
 }
 
 func executeTemplate(tmplFile string, md Metadata, goPackage, importRootPath string, fns template.FuncMap) ([]byte, error) {
