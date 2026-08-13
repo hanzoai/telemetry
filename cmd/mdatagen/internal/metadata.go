@@ -94,24 +94,6 @@ func (d *Deprecated) validate() error {
 	return nil
 }
 
-type Deprecated struct {
-	Since string `mapstructure:"since"`
-	Note  string `mapstructure:"note"`
-}
-
-func (d *Deprecated) validate() error {
-	if strings.TrimSpace(d.Since) == "" {
-		return errors.New("deprecated.since must be set")
-	}
-
-	// NOTE: note is optional, but if present, it must not be empty
-	if d.Note != "" && strings.TrimSpace(d.Note) == "" {
-		return errors.New("deprecated.note must not be empty")
-	}
-
-	return nil
-}
-
 func (md Metadata) GetCodeCovComponentID() string {
 	if md.Status.CodeCovComponentID != "" {
 		return md.Status.CodeCovComponentID
@@ -244,31 +226,6 @@ func (md *Metadata) validateEntities() error {
 			if _, ok := md.ResourceAttributes[ref.Ref]; !ok {
 				errs = errors.Join(errs, fmt.Errorf(`entity "%v": extra_attributes refers to undefined resource attribute: %v`, entity.Type, ref.Ref))
 			}
-		}
-	}
-
-	// Second pass: validate relationships
-	seenRelationships := make(map[string]string)
-	for _, entity := range md.Entities {
-		for _, rel := range entity.Relationships {
-			if rel.Type == "" {
-				errs = errors.Join(errs, fmt.Errorf(`entity "%v": relationship type cannot be empty`, entity.Type))
-				continue
-			}
-			if rel.Target == "" {
-				errs = errors.Join(errs, fmt.Errorf(`entity "%v": relationship target cannot be empty`, entity.Type))
-				continue
-			}
-			if !seenTypes[rel.Target] {
-				errs = errors.Join(errs, fmt.Errorf(`entity "%v": relationship target "%v" does not exist`, entity.Type, rel.Target))
-				continue
-			}
-			if seenRelationships[rel.Target] == entity.Type || seenRelationships[entity.Type] == rel.Target {
-				errs = errors.Join(errs, fmt.Errorf(`entity "%v": duplicate relationship to target "%v" (only one relationship allowed between two entities)`, entity.Type, rel.Target))
-				continue
-			}
-			seenRelationships[rel.Target] = entity.Type
-			seenRelationships[entity.Type] = rel.Target
 		}
 	}
 
@@ -802,6 +759,10 @@ type Entity struct {
 	Identity []EntityAttributeRef `mapstructure:"identity"`
 	// Description contains references to resource attributes that describe the entity.
 	Description []EntityAttributeRef `mapstructure:"description"`
+	// ExtraAttributes contains references to resource attributes carried on the
+	// entity without identifying or describing it. validate() already checks
+	// each ref resolves.
+	ExtraAttributes []EntityAttributeRef `mapstructure:"extra_attributes"`
 	// Relationships defines how this entity relates to other entities (optional).
 	// Relationships should be defined only on one end. It is recommended to define
 	// relationships on entities with lower lifespan (higher churn).

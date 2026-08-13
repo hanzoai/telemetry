@@ -6,12 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/scraper/scrapertest"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 type testDataSet int
@@ -164,12 +163,10 @@ func TestMetricsBuilder(t *testing.T) {
 			metrics := mb.Emit(WithResource(res))
 			if tt.name == "reaggregate_set" {
 				assert.Empty(t, mb.metricDefaultMetric.aggDataPoints)
-				assert.Empty(t, mb.metricDefaultMetricToBeRemoved.aggDataPoints)
 				assert.Empty(t, mb.metricMetricInputType.aggDataPoints)
 				assert.Empty(t, mb.metricOptionalMetric.aggDataPoints)
 				assert.Empty(t, mb.metricOptionalMetricEmptyUnit.aggDataPoints)
 				assert.Empty(t, mb.metricReaggregateMetric.aggDataPoints)
-				assert.Empty(t, mb.metricSystemCPUTime.aggDataPoints)
 			}
 
 			if tt.expectEmpty {
@@ -438,11 +435,11 @@ func TestMetricsBuilder(t *testing.T) {
 					if tt.name != "reaggregate_set" {
 						assert.False(t, validatedMetrics["reaggregate.metric"], "Found a duplicate in the metrics slice: reaggregate.metric")
 						validatedMetrics["reaggregate.metric"] = true
-						assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-						assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-						assert.Equal(t, "Metric for testing spatial reaggregation", ms.At(i).Description())
-						assert.Equal(t, "1", ms.At(i).Unit())
-						dp := ms.At(i).Gauge().DataPoints().At(0)
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Metric for testing spatial reaggregation", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
 						assert.Equal(t, start, dp.StartTimestamp())
 						assert.Equal(t, ts, dp.Timestamp())
 						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
@@ -456,11 +453,11 @@ func TestMetricsBuilder(t *testing.T) {
 					} else {
 						assert.False(t, validatedMetrics["reaggregate.metric"], "Found a duplicate in the metrics slice: reaggregate.metric")
 						validatedMetrics["reaggregate.metric"] = true
-						assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-						assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-						assert.Equal(t, "Metric for testing spatial reaggregation", ms.At(i).Description())
-						assert.Equal(t, "1", ms.At(i).Unit())
-						dp := ms.At(i).Gauge().DataPoints().At(0)
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Metric for testing spatial reaggregation", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
 						assert.Equal(t, start, dp.StartTimestamp())
 						assert.Equal(t, ts, dp.Timestamp())
 						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())

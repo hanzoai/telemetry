@@ -119,7 +119,7 @@ func NewTelemetryBuilder(settings component.TelemetrySettings, options ...Teleme
 	builder.QueueCapacity, err = builder.meter.Int64Gauge(
 		"otelcol_queue_capacity",
 		metric.WithDescription("Queue capacity - sync gauge example. [Development]"),
-		metric.WithUnit("{item}"),
+		metric.WithUnit("{items}"),
 	)
 	errs = errors.Join(errs, err)
 	builder.QueueLength, err = builder.meter.Int64ObservableGauge(

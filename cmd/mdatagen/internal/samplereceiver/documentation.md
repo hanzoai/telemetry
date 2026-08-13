@@ -287,7 +287,7 @@ Queue capacity - sync gauge example.
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| {item} | Gauge | Int | Development |
+| {items} | Gauge | Int | Development |
 
 ### otelcol_queue_length
 

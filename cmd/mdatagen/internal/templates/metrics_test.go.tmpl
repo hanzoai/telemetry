@@ -210,8 +210,10 @@ func TestMetricsBuilder(t *testing.T) {
 			metrics := mb.Emit(WithResource(res))
 			{{- if $reag }}
 			if tt.name == "reaggregate_set" {
-				{{- range $name, $_ := .Metrics }}
+				{{- range $name, $metric := .Metrics }}
+				{{- if hasAggregatableAttributes $metric.Attributes }}
 				assert.Empty(t, mb.metric{{ $name.Render }}.aggDataPoints)
+				{{- end }}
 				{{- end }}
 			}
 			{{- end }}
