@@ -4,6 +4,7 @@
 package otelconftelemetry
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,9 +16,15 @@ import (
 
 func TestDefaultConfig(t *testing.T) {
 	tests := []struct {
+		gate     bool
 		expected string
 	}{
 		{
+			gate:     false,
+			expected: "",
+		},
+		{
+			gate:     true,
 			expected: "localhost",
 		},
 	}
