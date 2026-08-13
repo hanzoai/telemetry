@@ -99,14 +99,20 @@ func (mb *multiBatcher) getActivePartitionsCount() int64 {
 }
 
 func (mb *multiBatcher) Shutdown(ctx context.Context) error {
-	var wg sync.WaitGroup
-	mb.shards.Range(func(_, shard any) bool {
-		wg.Go(func() {
-			_ = shard.(*partitionBatcher).Shutdown(ctx)
-		})
-		return true
-	})
-	wg.Wait()
+	// partitions is an LRU, which is not safe for concurrent use — every other
+	// reader here takes the lock. Take the batchers under it, then wait outside
+	// so a slow Shutdown does not hold the whole batcher.
+	mb.lock.Lock()
+	batchers := mb.partitions.Values()
 	mb.partitions.Purge()
+	mb.lock.Unlock()
+
+	var wg sync.WaitGroup
+	for _, pb := range batchers {
+		wg.Go(func() {
+			_ = pb.Shutdown(ctx)
+		})
+	}
+	wg.Wait()
 	return nil
 }

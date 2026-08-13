@@ -31,12 +31,7 @@ func WithForceUnmarshaler() confmap.UnmarshalOption {
 	return internal.WithForceUnmarshaler()
 }
 
-// WithForceUnmarshaler sets an option to run a top-level Unmarshal method,
-// even if the Conf being unmarshaled is already a parameter from an Unmarshal method.
-// To avoid infinite recursion, this should only be used when unmarshaling into
-// a different type from the current Unmarshaler.
-// For instance, this should be used in wrapper types such as configoptional.Optional
-// to ensure the inner type's Unmarshal method is called.
-func WithForceUnmarshaler() confmap.UnmarshalOption {
-	return internal.WithForceUnmarshaler()
+// WithUnredacted marshals opaque strings unredacted.
+func WithUnredacted() confmap.MarshalOption {
+	return internal.WithUnredacted()
 }
