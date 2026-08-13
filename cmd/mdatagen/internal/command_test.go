@@ -1003,6 +1003,15 @@ func TestGenerateConfigFiles_EmptyImportRootPathFallsBackToRootPackage(t *testin
 }
 
 func TestGenerateConfigFiles_InlineReplaceError(t *testing.T) {
+	// This test proves the write-back path reports failure, and it induces that
+	// failure with a read-only file. Root ignores the permission bits, so the
+	// write SUCCEEDS, generateConfigFiles returns nil, and require.Error fails —
+	// the assertion is sound and the premise simply does not hold. CI runs this
+	// container as root, so it failed on every run rather than intermittently.
+	if os.Geteuid() == 0 {
+		t.Skip("root bypasses file permissions, so a read-only file cannot induce the write error this test needs")
+	}
+
 	root := t.TempDir()
 	tmpdir := filepath.Join(root, "shortname")
 	require.NoError(t, os.MkdirAll(tmpdir, 0o700))
