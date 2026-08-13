@@ -22,6 +22,14 @@ var ServiceProfilesSupportFeatureGate = featuregate.GlobalRegistry().MustRegiste
 	featuregate.WithRegisterFromVersion("v0.112.0"),
 )
 
+var TelemetryNewPipelineTelemetryFeatureGate = featuregate.GlobalRegistry().MustRegister(
+	"telemetry.newPipelineTelemetry",
+	featuregate.StageAlpha,
+	featuregate.WithRegisterDescription("Inject component-identifying attributes in internal metrics."),
+	featuregate.WithRegisterReferenceURL("https://github.com/open-telemetry/opentelemetry-collector/pull/12217"),
+	featuregate.WithRegisterFromVersion("v0.123.0"),
+)
+
 var TelemetryUseLocalHostAsDefaultMetricsAddressFeatureGate = featuregate.GlobalRegistry().MustRegister(
 	"telemetry.UseLocalHostAsDefaultMetricsAddress",
 	featuregate.StageBeta,

@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 
+	"go.opentelemetry.io/collector/confmap/internal/metadata"
 	"go.opentelemetry.io/collector/confmap/internal/third_party/composehook"
 )
 
@@ -123,12 +124,12 @@ func useExpandValue() mapstructure.DecodeHookFuncType {
 			return v, nil
 		}
 
-		if !NewExpandedValueSanitizer.IsEnabled() {
+		if !metadata.ConfmapNewExpandedValueSanitizerFeatureGate.IsEnabled() {
 			switch to.Kind() {
 			case reflect.Array, reflect.Slice, reflect.Map:
 				if isStringyStructure(to) {
 					// If the target field is a stringy structure, sanitize to use the original string value everywhere.
-					return sanitizeToStr(data), nil
+					return sanitizeExpanded(data, true), nil
 				}
 
 				// Otherwise, sanitize to use the parsed value everywhere.

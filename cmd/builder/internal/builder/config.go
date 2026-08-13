@@ -41,17 +41,20 @@ type Config struct {
 	GCSet                bool   `mapstructure:"-"` // only used to override GCFlags
 	Verbose              bool   `mapstructure:"-"`
 
+	// omitempty is what keeps an unset component list out of the marshalled
+	// config. Without it a build that declares only receivers and exporters
+	// still writes `connectors: null`, `converters: null` and the rest.
 	Distribution      Distribution `mapstructure:"dist"`
-	Exporters         []Module     `mapstructure:"exporters"`
-	Extensions        []Module     `mapstructure:"extensions"`
-	Receivers         []Module     `mapstructure:"receivers"`
-	Processors        []Module     `mapstructure:"processors"`
-	Connectors        []Module     `mapstructure:"connectors"`
-	Telemetry         Module       `mapstructure:"telemetry"`
-	ConfmapProviders  []Module     `mapstructure:"providers"`
-	ConfmapConverters []Module     `mapstructure:"converters"`
-	Replaces          []string     `mapstructure:"replaces"`
-	Excludes          []string     `mapstructure:"excludes"`
+	Exporters         []Module     `mapstructure:"exporters,omitempty"`
+	Extensions        []Module     `mapstructure:"extensions,omitempty"`
+	Receivers         []Module     `mapstructure:"receivers,omitempty"`
+	Processors        []Module     `mapstructure:"processors,omitempty"`
+	Connectors        []Module     `mapstructure:"connectors,omitempty"`
+	Telemetry         Module       `mapstructure:"telemetry,omitempty"`
+	ConfmapProviders  []Module     `mapstructure:"providers,omitempty"`
+	ConfmapConverters []Module     `mapstructure:"converters,omitempty"`
+	Replaces          []string     `mapstructure:"replaces,omitempty"`
+	Excludes          []string     `mapstructure:"excludes,omitempty"`
 
 	ConfResolver ConfResolver `mapstructure:"conf_resolver,omitempty"`
 
