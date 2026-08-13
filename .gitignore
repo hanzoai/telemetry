@@ -41,3 +41,7 @@ go.work*
 node_modules/*
 package-lock.json
 CLAUDE.md
+
+# `go build ./...` inside cmd/otelcorecol drops the binary beside the source;
+# the Makefile target writes to bin/, which is already ignored above.
+cmd/otelcorecol/otelcorecol
