@@ -27,4 +27,4 @@ See the [documentation](https://hanzo.ai/docs/telemetry) for detailed guides and
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Apache-2.0 — see [LICENSE](LICENSE); upstream attribution in [NOTICE](NOTICE).
