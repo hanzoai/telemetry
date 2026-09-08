@@ -548,6 +548,9 @@ func TestLoader_PersistToFile_MkdirAllError(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("file permission test not reliable on Windows")
 	}
+	if os.Geteuid() == 0 {
+		t.Skip("root bypasses file permissions, so a read-only directory cannot induce the mkdir error this test needs")
+	}
 	tempDir := t.TempDir()
 	t.Cleanup(func() {
 		_ = os.Chmod(tempDir, 0o700) // #nosec G302 -- restore so t.TempDir cleanup can remove it

@@ -147,7 +147,7 @@ func checkConsumeContractScenario(params CheckConsumeContractParams, decisionFun
 
 	for range concurrency {
 		wg.Go(func() {
-			for atomic.AddInt64(&generatedIndex, 1) <= int64(params.GenerateCount) {
+			for generatedIndex.Add(1) <= int64(params.GenerateCount) {
 				ids := params.Generator.Generate()
 				require.NotEmpty(params.T, ids)
 

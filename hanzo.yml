@@ -1,0 +1,6 @@
+# 97 Go modules; the root module is 3 packages, so `go build ./...` at the root
+# would gate almost nothing. `make gotest` is the repo's own command and walks
+# every module (Makefile: for-all-target TARGET="test").
+test:
+  - name: build
+    run: make gotest

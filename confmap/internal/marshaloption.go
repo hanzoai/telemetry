@@ -29,3 +29,12 @@ func ApplyMarshalOptions(set *MarshalOptions, opts []MarshalOption) *MarshalOpti
 	}
 	return set
 }
+
+// WithUnredacted marshals opaque strings as their underlying value rather than
+// the redacted placeholder. Reading a config back out is the one place that
+// wants the real value.
+func WithUnredacted() MarshalOption {
+	return MarshalOptionFunc(func(mo *MarshalOptions) {
+		mo.OpaqueUnredacted = true
+	})
+}

@@ -61,7 +61,7 @@ func createDefaultConfig() component.Config {
 							WithoutScopeInfo:  ptr(true),
 							WithoutUnits:      ptr(true),
 							WithoutTypeSuffix: ptr(true),
-							Host:              ptr("localhost"),
+							Host:              ptr(metricsHost),
 							Port:              ptr(8888),
 						}}},
 					},

@@ -99,6 +99,7 @@ func TestExportTraceFailureAttributes(t *testing.T) {
 			obsrep, err := newObsReportSender(
 				exporter.Settings{ID: exporterID, TelemetrySettings: telemetry.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 				pipeline.SignalTraces,
+				nil,
 				sender.NewSender(func(context.Context, request.Request) error {
 					return tt.err
 				}),
@@ -173,6 +174,7 @@ func TestExportTraceFailureAttributesGRPCError(t *testing.T) {
 			obsrep, err := newObsReportSender(
 				exporter.Settings{ID: exporterID, TelemetrySettings: telemetry.NewTelemetrySettings(), BuildInfo: component.NewDefaultBuildInfo()},
 				pipeline.SignalTraces,
+				nil,
 				sender.NewSender(func(context.Context, request.Request) error {
 					return grpcErr
 				}),

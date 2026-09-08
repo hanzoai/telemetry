@@ -135,7 +135,7 @@ func (m *metric{{ $name.Render }}) init() {
 	{{- if $metric.Attributes }}
 	m.data.{{ $metric.Data.Type }}().DataPoints().EnsureCapacity(m.capacity)
 	{{- end }}
-	{{- if $reag }}
+	{{- if $metricReag }}
 	m.aggDataPoints = m.aggDataPoints[:0]
 	{{- end }}
 }

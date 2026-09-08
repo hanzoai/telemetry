@@ -6,12 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/receiver/receivertest"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 type testDataSet int
@@ -189,13 +188,13 @@ func TestMetricsBuilder(t *testing.T) {
 			metrics := mb.Emit(WithResource(res))
 			if tt.name == "reaggregate_set" {
 				assert.Empty(t, mb.metricDefaultMetric.aggDataPoints)
-				assert.Empty(t, mb.metricDefaultMetricToBeRemoved.aggDataPoints)
 				assert.Empty(t, mb.metricMetricInputType.aggDataPoints)
 				assert.Empty(t, mb.metricOptionalMetric.aggDataPoints)
 				assert.Empty(t, mb.metricOptionalMetricEmptyUnit.aggDataPoints)
 				assert.Empty(t, mb.metricReaggregateMetric.aggDataPoints)
 				assert.Empty(t, mb.metricReaggregateMetricWithRequired.aggDataPoints)
 				assert.Empty(t, mb.metricSystemCPUTime.aggDataPoints)
+				assert.Empty(t, mb.metricSystemMemoryUsage.aggDataPoints)
 			}
 
 			if tt.expectEmpty {

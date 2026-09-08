@@ -199,6 +199,11 @@ feature_gates:
     stage: alpha
     from_version: 'v0.112.0'
     reference_url: 'https://github.com/open-telemetry/opentelemetry-collector/pull/11477'
+  - id: telemetry.newPipelineTelemetry
+    description: 'Inject component-identifying attributes in internal metrics.'
+    stage: alpha
+    from_version: 'v0.123.0'
+    reference_url: 'https://github.com/open-telemetry/opentelemetry-collector/pull/12217'
   - id: telemetry.UseLocalHostAsDefaultMetricsAddress
     description: 'Controls whether default Prometheus metrics server use localhost as the default host for their endpoints'
     stage: beta
